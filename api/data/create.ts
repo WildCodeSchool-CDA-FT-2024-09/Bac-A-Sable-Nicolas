@@ -64,8 +64,8 @@ type RepoLang = {
   fs.writeFile(
     './api/data/status.json',
     JSON.stringify([{
-      id: 1, label: "Privé"
-    }, { id: 2, label: "Public"}]),
+      id: 1, name: "Privé"
+    }, { id: 2, name: "Public"}]),
     (err) =>
       err ? console.error(err) : console.log("File status is ready")
   )
