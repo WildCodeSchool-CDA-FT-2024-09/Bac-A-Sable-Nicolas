@@ -4,8 +4,10 @@ import langs from "../../data/langs.json";
 import repoLang from "../../data/repoLang.json";
 import { BadRequestError } from "../errors/BadRequestError.error";
 import { NotFoundError } from "../errors/NotFoundError.error";
+import { Lang } from "../entities/index.entites";
+import { validate } from "class-validator";
 
-interface Lang {
+interface LangReq {
   id: number;
   name: string;
 };
@@ -15,8 +17,12 @@ export default class LangController {
   constructor() {}
 
   getAllLangs = async (req: Request, res: Response): Promise<void> => {
-    const filteredLangs = langs.filter((e) => e.name != "");
-    res.status(200).json(filteredLangs);
+    const langsList = await Lang.find({
+      relations: {
+        repos: true
+      }
+    });
+    res.status(200).json(langsList);
   }
 
   getLang = async (req: Request, res: Response): Promise<void> => {
@@ -33,33 +39,23 @@ export default class LangController {
   }
 
   postLang = async (req: Request, res: Response): Promise<void> => {
-    const data: Omit<Lang, "id"> = req.body;
+    const data: Omit<LangReq, "id"> = req.body;
+    const lang = new Lang();
 
-    const checkName = langs.find((e) => e.name === data.name);
+    lang.name = data.name;
 
-    if (checkName) {
-      throw new BadRequestError("Provided name is already being used");
+    const error = await validate(lang);
+    if (error.length > 0) {
+      throw new BadRequestError("Invalid data") // todo 422 custom error
+    } else {
+      await lang.save();
+      res.status(201).send(lang);
     }
 
-    const langData: Lang = {
-      id: langs.length + 1,
-      ...data
-    }
-
-    langs.push(langData);
-
-    fs.writeFile(
-      './api/data/langs.json',
-      JSON.stringify(langs),
-      (err) =>
-        err ? console.error(err) : console.log("File langs has been updated.")
-    )
-
-    res.status(200).send(langData);
   }
 
   deleteLang = async (req: Request, res: Response): Promise<void> => {
-    const langID: Lang["id"] = parseInt(req.params.id);
+    const langID: LangReq["id"] = parseInt(req.params.id);
 
     const foundLang = langs.find((e) => e.id === langID);
 
@@ -90,8 +86,8 @@ export default class LangController {
   }
 
   putLang = async (req: Request, res: Response): Promise<void> => {
-    const langID: Lang["id"] = parseInt(req.params.id);
-    let data: Omit<Lang, "id"> = req.body;
+    const langID: LangReq["id"] = parseInt(req.params.id);
+    let data: Omit<LangReq, "id"> = req.body;
 
     const checkName = langs.find((e) => e.name === data.name);
 

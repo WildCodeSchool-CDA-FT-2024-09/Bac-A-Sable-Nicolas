@@ -4,8 +4,10 @@ import status from "../../data/status.json";
 import repos from "../../data/repos.json";
 import { BadRequestError } from "../errors/BadRequestError.error";
 import { NotFoundError } from "../errors/NotFoundError.error";
+import { Status } from "../entities/index.entites";
+import { validate } from "class-validator";
 
-interface Status {
+interface StatusReq {
   id: number;
   name: string;
 }
@@ -15,13 +17,18 @@ export default class StatusController {
   constructor() {}
 
   getAllStatus = async (req: Request, res: Response): Promise<void> => {
-    res.status(200).send(status);
+    const statusList = await Status.find({
+      relations: {
+        repos: true
+      }
+    });
+    res.status(200).json(statusList);
   }
 
   getStatus = async (req: Request, res: Response): Promise<void> => {
     const statusID = parseInt(req.params.id);
 
-    const foundStatus = status.find((e) => e.id === statusID) as Status;
+    const foundStatus = status.find((e) => e.id === statusID) as StatusReq;
 
     if (foundStatus) {
       res.status(200).send(foundStatus);
@@ -32,29 +39,19 @@ export default class StatusController {
   }
 
   postStatus = async (req: Request, res: Response): Promise<void> => {
-    const data: Omit<Status, "id"> = req.body;
+    const data: Omit<StatusReq, "id"> = req.body;
 
-    const checkName = status.find((e) => e.name === data.name);
+    const newStatus = new Status();
 
-    if (checkName) {
-      throw new BadRequestError("Provided name is already being used")
+    newStatus.name = data.name;
+
+    const error = await validate(newStatus);
+    if (error.length > 0) {
+      throw new BadRequestError("Invalid data"); // Need to create a custom 422 error
+    } else {
+      await newStatus.save();
+      res.status(201).send(newStatus);
     }
-
-    const statusData: Status = {
-      id: status.length + 1,
-      ...data
-    }
-
-    status.push(statusData);
-
-    fs.writeFile(
-      './api/data/status.json',
-      JSON.stringify(status),
-      (err) =>
-        err ? console.error(err) : console.log("File status has been updated.")
-    )
-
-    res.status(200).send(statusData);
   }
 
   deleteStatus = async (req: Request, res: Response): Promise<void> => {
@@ -88,8 +85,8 @@ export default class StatusController {
   }
 
   putStatus = async (req: Request, res: Response): Promise<void> => {
-    const statusID: Status["id"] = parseInt(req.params.id);
-    let data: Omit<Status, "id"> = req.body;
+    const statusID: StatusReq["id"] = parseInt(req.params.id);
+    let data: Omit<StatusReq, "id"> = req.body;
 
     const checkName = status.find((e) => e.name === data.name);
 
