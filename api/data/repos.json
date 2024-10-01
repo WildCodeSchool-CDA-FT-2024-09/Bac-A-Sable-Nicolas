@@ -178,5 +178,11 @@
     "isPrivate": 2,
     "name": "Revision",
     "url": "https://github.com/NicolasSokolowski/Revision"
+  },
+  {
+    "id": "OqeFcpkRQ7dV",
+    "url": "https://github.com/NicolasSokolowski/Lerepodeschampions",
+    "name": "Le repo des champions",
+    "isPrivate": 1
   }
 ]

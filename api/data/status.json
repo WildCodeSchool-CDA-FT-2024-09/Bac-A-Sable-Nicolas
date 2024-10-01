@@ -1,4 +1,1 @@
-[
-  { "id": 1, "name": "Privé" },
-  { "id": 2, "name": "Public" }
-]
+[{"id":1,"name":"Privé"},{"id":2,"name":"Public"},{"id":3,"name":""}]

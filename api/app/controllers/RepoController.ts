@@ -3,6 +3,9 @@ import repos from "../../data/repos.json";
 import repoLang from "../../data/repoLang.json";
 import langs from "../../data/langs.json";
 import fs from "fs";
+import { makeRandomString } from "../helpers/makeRandomString.helper";
+import { BadRequestError } from "../errors/BadRequestError.error";
+import { NotFoundError } from "../errors/NotFoundError.error";
 
 interface Repo {
   id: string;
@@ -29,11 +32,22 @@ export default class RepoController {
 
     const repo = repos.find((e) => e.id === repoID) as Repo;
 
-    res.status(200).send(repo);
+    if (repo) {
+      res.status(200).send(repo);
+    } else {
+      throw new NotFoundError();
+    }
+ 
   }
 
   getAllLangsByRepo = async (req: Request, res: Response): Promise<void> => {
     const repoID = req.params.id;
+
+    const foundRepo = repos.find((e) => e.id === repoID) as Repo;
+
+    if (!foundRepo) {
+      throw new NotFoundError();
+    }
 
     const foundRepos: RepoLang[] = repoLang.filter((e) => e.repo_id === repoID);
 
@@ -41,7 +55,23 @@ export default class RepoController {
   }
 
   postRepo = async (req: Request, res: Response): Promise<void> => {
-    const repoData: Repo = req.body;
+    const data: Omit<Repo, "id"|"url"> = req.body;
+
+    const checkName = repos.find((e) => e.name === data.name);
+
+    if (checkName) {
+      throw new BadRequestError("Provided name is already being used")
+    }
+
+    const repoID = makeRandomString(12);
+
+    const repoURL = "https://github.com/NicolasSokolowski/" + data.name.replace(/ /g, '');
+
+    const repoData: Repo = {
+      id: repoID,
+      url: repoURL,
+      ...data
+    }
 
     repos.push(repoData);
 
@@ -59,16 +89,22 @@ export default class RepoController {
     const repoID = req.params.id;
     const lang = req.body.name;
 
+    const foundRepo = repos.find((e) => e.id === repoID) as Repo;
+
+    if (!foundRepo) {
+      throw new NotFoundError();
+    }
+
     const foundLang = langs.find((e) => e.name === lang);
 
     if (!foundLang) {
-      throw new Error(`Language ${req.body.name} doesn't exist.`);
+      throw new NotFoundError();
     }
 
-    const foundRepo = repoLang.find((e) => e.repo_id === repoID && e.language_id === foundLang.id);
+    const foundRepoLang = repoLang.find((e) => e.repo_id === repoID && e.language_id === foundLang.id);
 
-    if (foundRepo) {
-      throw new Error("The repo already uses this language.");
+    if (foundRepoLang) {
+      throw new BadRequestError("The repo already uses this language.");
     }
 
     const data: RepoLang = {
@@ -87,4 +123,69 @@ export default class RepoController {
 
     res.status(200).send(data);
   }
+
+  deleteRepo = async (req: Request, res: Response): Promise<void> => {
+    const repoID: Repo["id"] = req.params.id;
+
+    const foundRepo = repos.find((e) => e.id === repoID) as Repo;
+
+    if (!foundRepo) {
+      throw new NotFoundError();
+    }
+
+    const deletedRepo = repos.filter((e) => e.id != repoID);
+    const deletedRepoLang = repoLang.filter((e) => e.repo_id != repoID);
+
+    fs.writeFile(
+      './api/data/repos.json',
+      JSON.stringify(deletedRepo),
+      (err) =>
+        err ? console.error(err) : console.log(`Repo ${repoID} deleted successfuly`)
+    )
+
+    fs.writeFile(
+      './api/data/repoLang.json',
+      JSON.stringify(deletedRepoLang),
+      (err) =>
+        err ? console.error(err) : console.log(`Repo ${repoID}'s languages deleted successfuly`)
+    )
+
+    res.status(204).send();
+  }
+
+  putRepo = async (req: Request, res: Response): Promise<void> => {
+    const repoID: Repo["id"] = req.params.id;
+    let data: Omit<Repo, "id"> = req.body;
+
+    const checkName = repos.find((e) => e.name === data.name);
+
+    if (checkName) {
+      throw new BadRequestError("Provided name already in use")
+    }
+
+    const repoIndex = repos.findIndex((e) => e.id === repoID);
+    
+    if (repoIndex === -1) {
+      throw new NotFoundError();
+    }
+
+    const repoURL = "https://github.com/NicolasSokolowski/" + data.name.replace(/ /g, '');
+
+    data = {
+      ...data,
+      url: repoURL
+    }
+
+    Object.assign(repos[repoIndex], data);
+  
+    fs.writeFile(
+      './api/data/repos.json',
+      JSON.stringify(repos),
+      (err) =>
+        err ? console.error(err) : console.log("File repo has been updated.")
+    );
+  
+    res.status(200).send(repos[repoIndex]);
+  }
+  
 }
