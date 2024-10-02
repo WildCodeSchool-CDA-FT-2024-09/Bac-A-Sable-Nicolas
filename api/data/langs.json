@@ -1,9 +1,1 @@
-[
-  { "id": 1, "name": "Anglais" },
-  { "id": 2, "name": "TypeScript" },
-  { "id": 3, "name": "PLpgSQL" },
-  { "id": 4, "name": "Dockerfile" },
-  { "id": 5, "name": "HTML" },
-  { "id": 6, "name": "SCSS" },
-  { "id": 7, "name": "CSS" }
-]
+[{"id":1,"name":"JavaScript"},{"id":2,"name":"HTML"},{"id":3,"name":"CSS"},{"id":4,"name":"TypeScript"},{"id":5,"name":"PLpgSQL"},{"id":6,"name":"Dockerfile"},{"id":7,"name":"SCSS"}]

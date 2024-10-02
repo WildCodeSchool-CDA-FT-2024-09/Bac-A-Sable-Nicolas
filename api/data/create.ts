@@ -19,7 +19,7 @@ type RepoLang = {
 
 (async() => {
   const raw = await JSON.parse(
-    fs.readFileSync("./api/data/raw.json", { encoding: "utf-8"})
+    fs.readFileSync("./data/raw.json", { encoding: "utf-8"})
   )
 
 
@@ -48,21 +48,21 @@ type RepoLang = {
   })
 
   fs.writeFile(
-    './api/data/repos.json',
+    './data/repos.json',
     JSON.stringify(repo),
     (err) =>
       err ? console.error(err) : console.log("File repo is ready")
   )
 
   fs.writeFile(
-    './api/data/langs.json',
+    './data/langs.json',
     JSON.stringify(langs),
     (err) =>
       err ? console.error(err) : console.log("File langs is ready")
   )
 
   fs.writeFile(
-    './api/data/status.json',
+    './data/status.json',
     JSON.stringify([{
       id: 1, name: "Privé"
     }, { id: 2, name: "Public"}]),
@@ -71,7 +71,7 @@ type RepoLang = {
   )
 
   fs.writeFile(
-    './api/data/repoLang.json',
+    './data/repoLang.json',
     JSON.stringify(repoLang),
     (err) =>
       err ? console.error(err) : console.log("File repoLang is ready")

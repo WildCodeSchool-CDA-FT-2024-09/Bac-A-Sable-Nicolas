@@ -1,0 +1,31 @@
+{
+  "name": "bac-a-sable-nicolas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "class-validator": "^0.14.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "joi": "^17.13.3",
+    "reflect-metadata": "^0.2.2",
+    "sqlite3": "^5.1.7",
+    "typeorm": "^0.3.20"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.6.2"
+  },
+  "scripts": {
+    "dev": "ts-node-dev ./app/index.app.ts",
+    "create": "ts-node-dev ./data/create.ts",
+    "fetch": "gh repo list NicolasSokolowski --json  id,name,url,languages,isPrivate > ./data/raw.json",
+    "seed": "ts-node-dev ./app/database/seed.ts",
+    "full": "npm run fetch && npm run create && npm run seed && npm run dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

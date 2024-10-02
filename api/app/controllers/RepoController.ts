@@ -131,7 +131,6 @@ export default class RepoController {
     } else {
       throw new BadRequestError(`The repo ${repo.id} already uses language ${lang.name}`)
     }
-
     
   }
 
