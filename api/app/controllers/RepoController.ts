@@ -27,13 +27,22 @@ export default class RepoController {
   constructor() {};
 
   getAllRepos = async (req: Request, res: Response): Promise<void> => {
-    const repos = await Repo.find({
-      relations: {
-        status: true,
-        languages: true
-      }
-    });
+    const { search } = req.query;
+
+    const query = Repo.createQueryBuilder("repo")
+      .leftJoinAndSelect("repo.status", "status")
+      .leftJoinAndSelect("repo.languages", "languages");
+
+    if (search) {
+      query.where(
+        "(LOWER(repo.name) LIKE LOWER(:search) OR LOWER(status.name) LIKE LOWER(:search) OR LOWER(languages.name) LIKE LOWER(:search))",
+        { search: `%${search}%` }
+      );
+    }
+
+    const repos = await query.getMany();
     res.status(200).json(repos);
+
   }
 
   getRepo = async (req: Request, res: Response): Promise<void> => {
