@@ -1,7 +1,19 @@
-import { Repo } from "../features/repo/RepoList";
-import connexion from "./connexion";
+import { gql } from "@apollo/client";
 
-export async function getRepos(): Promise<Repo[]> {
-  const response = await connexion.get<Repo[]>("/repos");
-  return response.data;
-}
+export const GET_REPOS = gql`
+  query getRepos {
+    getRepos {
+      id
+      name
+      url
+      status {
+        id
+        name
+      }
+      languages {
+        id
+        name
+      }
+    }
+  }
+`

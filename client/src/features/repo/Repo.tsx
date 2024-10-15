@@ -1,9 +1,7 @@
-import { Link } from "react-router-dom";
 import Language from "./Language";
 import { Lang } from "./RepoList";
 
 function Repo({ repo }) {
-
   return (
     <div className="flex flex-col items-start p-5 border w-48 h-64">
       <h1 className="font-semibold mb-1">

@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AppLayout from "./ui/AppLayout";
 import Error from "./ui/Error";
-import RepoList, { loader as reposLoader } from "./features/repo/RepoList";
+import RepoList from "./features/repo/RepoList";
 
 const router = createBrowserRouter([
   {
@@ -11,7 +11,6 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <RepoList />,
-        loader: reposLoader,
         errorElement: <Error />
       },
       // {

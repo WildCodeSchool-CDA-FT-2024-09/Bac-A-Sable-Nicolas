@@ -30,7 +30,7 @@ const langLogo = [
 ]
 
 function Language({ lang }) {
-  const imageLogo = langLogo.find((e) => e.id === lang.id)?.url;
+  const imageLogo = langLogo.find((e) => e.id == lang.id)?.url;
 
   return (
     <li className="p-1 flex">

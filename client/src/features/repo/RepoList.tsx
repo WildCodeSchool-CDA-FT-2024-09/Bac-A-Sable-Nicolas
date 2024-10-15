@@ -1,9 +1,9 @@
 import { useDispatch } from "react-redux";
-import { getRepos } from "../../services/apiRepo";
+import { GET_REPOS } from "../../services/apiRepo";
 import Repo from "./Repo";
-import { useLoaderData } from "react-router-dom";
-import { setRepos } from "./repoSlice";
+import { useQuery } from "@apollo/client";
 import { useEffect } from "react";
+import { setRepos } from "./repoSlice";
 
 export interface Repo {
   id: string;
@@ -24,16 +24,21 @@ export interface Lang {
 }
 
 export default function RepoList() {
-  const repos = useLoaderData() as Repo[];
+  const { loading, error, data } = useQuery(GET_REPOS);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(setRepos(repos));
-  }, [repos, dispatch]);
+    if (data && data.getRepos) {
+      dispatch(setRepos(data.getRepos));
+    }
+  }, []);
+
+  if (loading) return <div>Loading...</div>
+  if (error) return <div>Error</div>
   
   return (
     <div className="flex flex-wrap gap-2 justify-center my-3">
-      {repos.map((repo: Repo) => (
+      {data.getRepos.map((repo: Repo) => (
         <Repo 
           repo={repo} 
           key={repo.id}
@@ -41,9 +46,4 @@ export default function RepoList() {
       ))}
     </div>
   )
-}
-
-export async function loader(): Promise<Repo[]> {
-  const repos: Repo[] = await getRepos();
-  return repos;
 }
