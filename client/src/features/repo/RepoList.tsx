@@ -4,27 +4,28 @@ import Repo from "./Repo";
 import { useQuery } from "@apollo/client";
 import { useEffect } from "react";
 import { setRepos } from "./repoSlice";
+import { useGetReposQuery } from "../../generated/graphql-types";
 
 export interface Repo {
   id: string;
   name: string;
   url: string;
-  status: Status[],
+  status?: Status,
   languages?: Lang[]
 }
 
 export interface Status {
-  id: number;
+  id: string;
   name: string;
 }
 
 export interface Lang {
-  id: number;
+  id: string;
   name: string;
 }
 
 export default function RepoList() {
-  const { loading, error, data } = useQuery(GET_REPOS);
+  const { loading, error, data } = useGetReposQuery();
   const dispatch = useDispatch();
 
   useEffect(() => {

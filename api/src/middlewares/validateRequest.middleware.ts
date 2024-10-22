@@ -7,6 +7,6 @@ export const validateRequest = (sourceProperty: keyof Request, schema: Joi.Objec
     await schema.validateAsync(req[sourceProperty], { abortEarly: false });
     next();
   } catch (err: any) {
-      next(new RequestValidationError(err.details));
+    next(new RequestValidationError(err.details));
   }
 };

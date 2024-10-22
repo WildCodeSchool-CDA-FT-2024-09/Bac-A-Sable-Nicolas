@@ -1,5 +1,5 @@
 import { Arg, Field, InputType, Mutation, Query, Resolver } from "type-graphql";
-import { Status } from "../entities/Status.entity";
+import { Status } from "../entities/index.entites";
 import { BadRequestError } from "../errors/BadRequestError.error";
 import { NotFoundError } from "../errors/NotFoundError.error";
 
