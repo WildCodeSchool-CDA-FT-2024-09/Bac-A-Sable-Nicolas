@@ -8,12 +8,12 @@ import { langs, status, repos, repoLang } from "../../data/index.data";
 
   try {
     await queryRunner.startTransaction();
-    await queryRunner.query("DELETE FROM repo_languages_lang");
-    await queryRunner.query("DELETE FROM lang");
-    await queryRunner.query("DELETE FROM repo");
-    await queryRunner.query("DELETE FROM status");
+    await queryRunner.query("TRUNCATE repo_languages_lang CASCADE");
+    await queryRunner.query("TRUNCATE lang CASCADE");
+    await queryRunner.query("TRUNCATE repo CASCADE");
+    await queryRunner.query("TRUNCATE status CASCADE");
 
-    await queryRunner.query("DELETE FROM sqlite_sequence WHERE name='status' OR name='lang'");
+    await queryRunner.commitTransaction();
 
     const savedLangs = await Promise.all(
       langs.map(async (e) => {
@@ -54,10 +54,11 @@ import { langs, status, repos, repoLang } from "../../data/index.data";
       })
     )
 
-    await queryRunner.commitTransaction();
-
   } catch (err) {
     console.error(err);
     await queryRunner.rollbackTransaction();
+  } finally {
+    await dataSource.destroy();
+    return;
   }
 })();

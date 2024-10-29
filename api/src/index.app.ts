@@ -7,7 +7,7 @@ import RepoResolver from './resolvers/repo.resolver';
 import LangResolver from './resolvers/lang.resolver';
 import StatusResolver from './resolvers/status.resolver';
 
-const PORT = parseInt(`${process.env.PORT}`) || 3000;
+const PORT = parseInt(`${process.env.PORT}`);
 
 (async () => {
   await dataSource.initialize();

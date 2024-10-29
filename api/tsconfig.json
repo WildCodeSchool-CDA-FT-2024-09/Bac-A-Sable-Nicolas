@@ -110,8 +110,8 @@
     "node_modules"
   ],
   "include": [
-    "./app/**/*.ts",
+    "./src/**/*.ts",
     "./data/*.ts",
-    "./app/index.app.ts"
+    "./src/index.app.ts"
   ]
 }
